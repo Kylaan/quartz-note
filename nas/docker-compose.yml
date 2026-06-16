@@ -1,0 +1,25 @@
+# ============================================================
+# NAS 侧整箱（内存足，跑 Docker）：拉白名单笔记 → quartz build → 产物写入 AList 暴露的目录。
+# 云机再从那个目录错峰拉取（见 ../cloud/）。
+#   部署（在本 nas/ 目录里）： docker compose up -d --build
+# ============================================================
+services:
+  builder:
+    build:
+      context: .
+      dockerfile: builder/Dockerfile
+      network: host   # 绕开 BuildKit DNS 故障
+    image: notes-builder:latest
+    container_name: notes-builder
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - content:/quartz/content        # rclone 落点（白名单笔记）
+      # ★把构建产物写到 NAS 的一个目录，并在 AList 里把它作为一个存储/路径暴露给云机拉取。
+      #   左边换成你 NAS 上的真实路径；右边固定 /site（entrypoint 把产物 sync 到这里）。
+      - /srv/notes-site/public:/site
+    # NAS 内存足，不设限制；BUILD_CONCURRENCY 留空=按核数跑满（最快）。
+    # 若 NAS 也偏小，可在 .env 里设 BUILD_CONCURRENCY=1 + 给本服务加 mem_limit。
+
+volumes:
+  content:

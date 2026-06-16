@@ -1,0 +1,180 @@
+kylaan@iZ2ze5hwsx735yksul07ilZ:~$ sudo sh -c '
+echo "===== BEFORE STOP =====" > /root/emergency-diagnose.log
+date >> /root/emergency-diagnose.log
+free -h >> /root/emergency-diagnose.log
+ps aux --sort=-%mem | head -40 >> /root/emergency-diagnose.log
+docker ps >> /root/emergency-diagnose.log 2>&1
+docker stats --no-stream >> /root/emergency-diagnose.log 2>&1
+
+docker ps -aq | xargs -r docker update --restart=no
+docker ps -q | xargs -r docker stop -t 1
+
+systemctl disable --now docker docker.socket containerd
+
+echo "===== AFTER STOP ====="
+free -h
+ps aux --sort=-%mem | head -20
+'
+[sudo] password for kylaan:
+96888f53568e
+33a6a4036f66
+94ed479e1bea
+933bf326933e
+8dcc3fd86543
+6051b6d4922c
+96888f53568e
+33a6a4036f66
+94ed479e1bea
+933bf326933e
+8dcc3fd86543
+6051b6d4922c
+Removed "/etc/systemd/system/sockets.target.wants/docker.socket".
+Removed "/etc/systemd/system/multi-user.target.wants/docker.service".
+Removed "/etc/systemd/system/multi-user.target.wants/containerd.service".
+Disabling 'docker.service', but its triggering units are still active:
+docker.socket
+===== AFTER STOP =====
+               total        used        free      shared  buff/cache   available
+Mem:           1.6Gi       635Mi       228Mi       3.8Mi       906Mi       977Mi
+Swap:          1.0Gi          0B       1.0Gi
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root        2062 12.6  3.5  73440 59432 ?        S    13:53   0:01 /www/server/panel/pyenv/bin/python3 /www/server/panel/class/jobs.py
+root         899 12.4  3.0 1986276 50816 ?       Ssl  13:53   0:02 /snap/tailscale/154/bin/tailscaled --socket /var/snap/tailscale/common/socket/tailscaled.sock --statedir /var/snap/tailscale/common --verbose 10
+root        2045  0.4  2.7 136184 45464 ?        S    13:53   0:00 /www/server/panel/pyenv/bin/python3 /www/server/panel/BT-Panel
+root         905  8.8  2.4 1776656 41216 ?       Ssl  13:53   0:01 /snap/snapd/current/usr/lib/snapd/snapd
+root        3595 69.8  2.3  54772 39240 ?        D    13:53   0:00 /www/server/panel/pyenv/bin/python -c import docker; print(docker.__version__.split('.')[0])
+root        3263 15.3  2.0 202260 34140 ?        Sl   13:53   0:00 /www/server/panel/pyenv/bin/python3.7 /www/server/panel/script/task_script_extension.py task_ssh_error_count
+www         1108  0.0  1.9 297956 31880 ?        S    13:53   0:00 nginx: worker process
+www         1114  0.0  1.9 297956 31880 ?        S    13:53   0:00 nginx: worker process
+root        2807  4.7  1.8 138112 31244 ?        S<sl 13:53   0:00 /usr/local/aegis/aegis_client/aegis_12_93/AliYunDunMonitor
+root        1102  0.1  1.7 1172592 29696 ?       Sl   13:53   0:00 /usr/local/cloudmonitor/bin/argusagent
+root        1076  1.5  1.7 261684 28160 ?        Ssl  13:53   0:00 /usr/bin/python3 -Es /usr/sbin/tuned -l -P
+root         352  0.1  1.6 288952 27136 ?        SLsl 13:53   0:00 /sbin/multipathd -d -s
+root        1033  0.7  1.3 109660 22400 ?        Ssl  13:53   0:00 /usr/bin/python3 /usr/share/unattended-upgrades/unattended-upgrade-shutdown --wait-for-signal
+root         888  1.2  1.2  32064 20864 ?        Ss   13:53   0:00 /usr/bin/python3 /usr/bin/networkd-dispatcher --run-startup-triggers
+root         868  2.0  1.2 689468 20400 ?        Ssl  13:53   0:00 /usr/local/share/aliyun-assist/aliyun-service.symlink
+root         303  1.5  1.0  42692 17280 ?        S<s  13:53   0:00 /usr/lib/systemd/systemd-journald
+root        1110  1.4  0.9 104624 15376 ?        Ssl  13:53   0:00 /usr/local/aegis/aegis_client/aegis_12_93/AliYunDun
+root           1  7.1  0.8  22760 13872 ?        Ss   13:53   0:02 /sbin/init noibrs
+root        2135  1.0  0.8 393240 13352 ?        Sl   13:53   0:00 /www/server/panel/pyenv/bin/python3 /www/server/panel/BT-Task
+kylaan@iZ2ze5hwsx735yksul07ilZ:~$ free -h
+               total        used        free      shared  buff/cache   available
+Mem:           1.6Gi       563Mi       262Mi       3.8Mi       945Mi       1.0Gi
+Swap:          1.0Gi          0B       1.0Gi
+kylaan@iZ2ze5hwsx735yksul07ilZ:~$ free -h
+               total        used        free      shared  buff/cache   available
+Mem:           1.6Gi       562Mi       262Mi       3.8Mi       945Mi       1.0Gi
+Swap:          1.0Gi          0B       1.0Gi
+kylaan@iZ2ze5hwsx735yksul07ilZ:~$ free -h
+               total        used        free      shared  buff/cache   available
+Mem:           1.6Gi       588Mi       233Mi       3.8Mi       948Mi       1.0Gi
+Swap:          1.0Gi          0B       1.0Gi
+
+kylaan@iZ2ze5hwsx735yksul07ilZ:~$ sudo cat /root/emergency-diagnose.log
+===== BEFORE STOP =====
+Mon Jun 15 01:53:52 PM CST 2026
+               total        used        free      shared  buff/cache   available
+Mem:           1.6Gi       743Mi        67Mi       4.3Mi       959Mi       869Mi
+Swap:          1.0Gi          0B       1.0Gi
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root        1158 10.2  4.6 2612052 76800 ?       Ssl  13:53   0:01 /usr/bin/dockerd -H unix:// --containerd=/run/containerd/containerd.sock
+root        2741  9.6  4.1 1368384 68736 ?       Ssl  13:53   0:00 ./alist server --no-prefix
+root        2914  9.1  3.8 1337944 63744 ?       Sl   13:53   0:00 rclone sync NAS:obsidian /quartz/content --filter-from /quartz/filter-public.txt --delete-excluded --fast-list --transfers 8 --checkers 16 -v
+root        2795 14.4  3.7 1368640 61440 ?       Ssl  13:53   0:00 /mihomo
+root        2062 15.5  2.7  59172 45216 ?        R    13:53   0:00 /www/server/panel/pyenv/bin/python3 /www/server/panel/class/jobs.py
+root        2045  0.9  2.7 136184 44824 ?        Sl   13:53   0:00 /www/server/panel/pyenv/bin/python3 /www/server/panel/BT-Panel
+root         899 16.4  2.6 1846424 44032 ?       Ssl  13:53   0:02 /snap/tailscale/154/bin/tailscaled --socket /var/snap/tailscale/common/socket/tailscaled.sock --statedir /var/snap/tailscale/common --verbose 10
+root         905 13.0  2.5 1776656 41344 ?       Ssl  13:53   0:01 /snap/snapd/current/usr/lib/snapd/snapd
+root         930  2.0  2.4 1267092 40448 ?       Ssl  13:53   0:00 /usr/bin/containerd
+root        2826 22.6  2.0  44004 33264 ?        R    13:53   0:00 /www/server/panel/pyenv/bin/python3.7 /www/server/panel/script/panel_ssl_task.py
+www         1108  0.0  1.9 297956 31880 ?        S    13:53   0:00 nginx: worker process
+www         1114  0.0  1.9 297956 31880 ?        S    13:53   0:00 nginx: worker process
+root        1102  0.1  1.8 1172592 30336 ?       Sl   13:53   0:00 /usr/local/cloudmonitor/bin/argusagent
+root        1076  2.3  1.7 261684 28160 ?        Ssl  13:53   0:00 /usr/bin/python3 -Es /usr/sbin/tuned -l -P
+root         352  0.1  1.6 288952 27136 ?        SLsl 13:53   0:00 /sbin/multipathd -d -s
+root        2807  7.7  1.5 129856 25856 ?        S<sl 13:53   0:00 /usr/local/aegis/aegis_client/aegis_12_93/AliYunDunMonitor
+root        1033  1.0  1.4 109660 23168 ?        Ssl  13:53   0:00 /usr/bin/python3 /usr/share/unattended-upgrades/unattended-upgrade-shutdown --wait-for-signal
+root         888  1.7  1.2  32064 20864 ?        Ss   13:53   0:00 /usr/bin/python3 /usr/bin/networkd-dispatcher --run-startup-triggers
+root         868  3.1  1.2 689468 20400 ?        Ssl  13:53   0:00 /usr/local/share/aliyun-assist/aliyun-service.symlink
+root         303  1.7  1.0  42692 16896 ?        S<s  13:53   0:00 /usr/lib/systemd/systemd-journald
+root        1110  1.7  0.9 104624 15376 ?        Ssl  13:53   0:00 /usr/local/aegis/aegis_client/aegis_12_93/AliYunDun
+root        3063 22.2  0.9  22880 15360 ?        Ds   13:53   0:00 /usr/bin/python3 /usr/bin/cloud-init modules --mode=final
+root        2404  0.5  0.8 1239040 13952 ?       Sl   13:53   0:00 /usr/bin/containerd-shim-runc-v2 -namespace moby -id 33a6a4036f66b7d31b65a1e1f55b7f3558997c4d635d2dbf75ea49b0b424136f -address /run/containerd/containerd.sock
+root        2535  0.6  0.8 1238784 13952 ?       Sl   13:53   0:00 /usr/bin/containerd-shim-runc-v2 -namespace moby -id 96888f53568e3e4d6ec3ebe414f20689e3379f5db31cb7913f0e7f8a7bb74102 -address /run/containerd/containerd.sock
+root        2504  0.6  0.8 1239040 13824 ?       Sl   13:53   0:00 /usr/bin/containerd-shim-runc-v2 -namespace moby -id 933bf326933e340d699664d1623f4c25ba3baa0dfa5f3f7111f04b0f6966bf95 -address /run/containerd/containerd.sock
+root        2608  0.9  0.8 1239040 13824 ?       Sl   13:53   0:00 /usr/bin/containerd-shim-runc-v2 -namespace moby -id 8dcc3fd8654340f411bff621c59a344fd9800b99c314d12a84efb09c4bdc9f49 -address /run/containerd/containerd.sock
+root        2764  0.7  0.8 1239040 13824 ?       Sl   13:53   0:00 /usr/bin/containerd-shim-runc-v2 -namespace moby -id 6051b6d4922c37da736fabd08e82e91c44062edbc87e64d6dc0789a471625b58 -address /run/containerd/containerd.sock
+root        2486  0.6  0.8 1238784 13696 ?       Sl   13:53   0:00 /usr/bin/containerd-shim-runc-v2 -namespace moby -id 94ed479e1bea724df0e2f1a99f02aa83bf7070e3acd8389c6916c8758851647f -address /run/containerd/containerd.sock
+root           1  7.0  0.8  22472 13616 ?        Ss   13:53   0:01 /sbin/init noibrs
+root        2624 12.4  0.8  17296 13520 ?        Rs   13:53   0:00 /usr/local/bin/python3.11 /usr/local/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips=*
+root        2135  0.8  0.8 393240 13352 ?        Sl   13:53   0:00 /www/server/panel/pyenv/bin/python3 /www/server/panel/BT-Task
+root         916  0.8  0.7 468828 13184 ?        Ssl  13:53   0:00 /usr/libexec/udisks2/udisksd
+systemd+     512  2.1  0.7  21712 12928 ?        Ss   13:53   0:00 /usr/lib/systemd/systemd-resolved
+root        1075  1.0  0.7 392088 12928 ?        Ssl  13:53   0:00 /usr/sbin/ModemManager
+root         897  0.3  0.7 1755128 12288 ?       Ssl  13:53   0:00 /www/server/site_total/site_total
+kylaan      1499  3.3  0.6  20316 11392 ?        Ss   13:53   0:00 /usr/lib/systemd/systemd --user
+www         1115  0.0  0.6 266852 10940 ?        S    13:53   0:00 nginx: cache manager process
+root        1124  0.8  0.6  14964 10664 ?        Ss   13:53   0:00 sshd: kylaan [priv]
+www         1116  0.0  0.6 266852 10172 ?        S    13:53   0:00 nginx: cache loader process
+CONTAINER ID   IMAGE                     COMMAND                  CREATED       STATUS                           PORTS                                                                                                                                                 NAMES
+96888f53568e   nginx:alpine              "/docker-entrypoint.…"   3 days ago    Up 1 second                      127.0.0.1:8089->80/tcp                                                                                                                                notes-web
+33a6a4036f66   notes-builder:latest      "docker-entrypoint.s…"   3 days ago    Up 1 second                                                                                                                                                                            notes-builder
+94ed479e1bea   nav-408:latest            "uvicorn app.main:ap…"   6 days ago    Up 1 second (health: starting)   127.0.0.1:8088->8000/tcp                                                                                                                              nav-408
+933bf326933e   blog-editor:latest        "/sbin/tini -- /entr…"   3 weeks ago   Up 1 second (health: starting)   127.0.0.1:3001->3001/tcp                                                                                                                              blog-editor
+8dcc3fd86543   xhofe/alist:latest        "/entrypoint.sh"         5 weeks ago   Up 1 second                      0.0.0.0:5244->5244/tcp, :::5244->5244/tcp, 0.0.0.0:5246->5246/tcp, :::5246->5246/tcp, 5245/tcp                                                        alist
+6051b6d4922c   metacubex/mihomo:latest   "/mihomo"                6 weeks ago   Up 1 second (health: starting)   0.0.0.0:7890-7894->7890-7894/tcp, :::7890-7894->7890-7894/tcp, 0.0.0.0:8080->8080/tcp, :::8080->8080/tcp, 0.0.0.0:9090->9090/tcp, :::9090->9090/tcp   mihomo
+CONTAINER ID   NAME            CPU %     MEM USAGE / LIMIT     MEM %     NET I/O           BLOCK I/O         PIDS
+96888f53568e   notes-web       0.00%     3.422MiB / 1.575GiB   0.21%     888B / 0B         10.1MB / 4.1kB    3
+33a6a4036f66   notes-builder   0.01%     14.22MiB / 1.575GiB   0.88%     1.08kB / 338B     84.4MB / 24.6kB   8
+94ed479e1bea   nav-408         42.98%    26.74MiB / 1.575GiB   1.66%     1.04kB / 0B       22.9MB / 0B       1
+933bf326933e   blog-editor     0.31%     3.027MiB / 1.575GiB   0.19%     6.03kB / 4.68kB   5.26MB / 20.5kB   5
+8dcc3fd86543   alist           0.00%     52.46MiB / 1.575GiB   3.25%     1.04kB / 0B       86.1MB / 4.1kB    7
+6051b6d4922c   mihomo          48.37%    138.8MiB / 1.575GiB   8.60%     1.04kB / 0B       41MB / 0B         5
+kylaan@iZ2ze5hwsx735yksul07ilZ:~$ nproc                          # 几个核
+cat /sys/devices/system/cpu/cpu0/cpufreq/* 2>/dev/null
+# 卡的时候看负载:
+uptime                         # load average,若远超核数就是 CPU 饱和
+2
+ 14:12:48 up 19 min,  1 user,  load average: 0.01, 0.19, 0.32
+
+kylaan@iZ2ze5hwsx735yksul07ilZ:~$ systemd-analyze blame | head -20          # 哪些服务启动最慢/最重
+systemd-analyze critical-chain            # 启动关键路径
+10.865s bt.service
+ 6.225s snapd.seeded.service
+ 5.920s snapd.service
+ 3.102s cloud-final.service
+ 2.983s cloud-config.service
+ 2.601s apport.service
+ 2.318s cloudmonitor.service
+ 1.967s networkd-dispatcher.service
+ 1.962s rsyslog.service
+ 1.836s tuned.service
+ 1.637s systemd-networkd-wait-online.service
+ 1.375s cloud-init-local.service
+ 1.360s nginx.service
+ 1.258s udisks2.service
+ 1.219s kdump-tools.service
+ 1.151s docker.service
+ 1.077s dev-vda3.device
+ 1.032s apparmor.service
+  992ms chrony.service
+  968ms polkit.service
+The time when unit became active or started is printed after the "@" character.
+The time the unit took to start is printed after the "+" character.
+
+graphical.target @20.776s
+└─multi-user.target @20.775s
+  └─bt.service @6.840s +10.865s
+    └─basic.target @6.803s
+      └─sockets.target @6.802s
+        └─snapd.socket @6.790s +11ms
+          └─sysinit.target @6.775s
+            └─cloud-init.service @6.186s +584ms
+              └─systemd-networkd-wait-online.service @4.542s +1.637s
+                └─systemd-networkd.service @4.420s +109ms
+                  └─network-pre.target @4.414s
+                    └─cloud-init-local.service @3.037s +1.375s
+                      └─systemd-remount-fs.service @773ms +94ms
+                        └─systemd-journald.socket @513ms
+                          └─-.mount @424ms
+                            └─-.slice @424ms

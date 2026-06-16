@@ -1,0 +1,12 @@
+# 机密
+.env
+.env.*
+!.env.example
+
+
+# 运行产物 / 依赖（都在容器与命名卷里，不入库）
+content/
+public/
+node_modules/
+*.log
+notes-builder.tar
