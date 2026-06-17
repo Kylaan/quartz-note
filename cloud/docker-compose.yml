@@ -1,0 +1,37 @@
+# ============================================================
+# 云机侧整箱（公网，资源紧）：只 错峰拉取 + nginx 伺服，不在本机构建。
+# 构建在 NAS 上跑，见 ../nas/。
+#   部署（在本 cloud/ 目录里）： docker compose up -d --build
+# ============================================================
+services:
+  # 错峰、限速地把 NAS 上构建好的静态产物拉到本地 site 卷（极轻，无 node/quartz）
+  puller:
+    build:
+      context: .
+      dockerfile: puller/Dockerfile
+      network: host   # 绕开 BuildKit DNS 故障
+    image: notes-puller:latest
+    container_name: notes-puller
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - site:/site
+    # 拉取很轻，给个小上限即可（再也不会有 build 把宿主机吃爆）
+    mem_limit: 256m
+    cpus: "0.5"
+
+  # 只读托管 site 卷里的静态站，发布到本机端口，由你的 OpenResty/Nginx 反代
+  web:
+    image: nginx:alpine
+    container_name: notes-web
+    restart: unless-stopped
+    depends_on:
+      - puller
+    volumes:
+      - site:/usr/share/nginx/html:ro
+      - ./web/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "127.0.0.1:8089:80"   # 注意：8088 已被 408-nav 占用，这里用 8089
+
+volumes:
+  site:
